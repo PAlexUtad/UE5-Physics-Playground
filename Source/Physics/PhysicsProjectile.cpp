@@ -32,67 +32,18 @@ APhysicsProjectile::APhysicsProjectile()
 
 	// Die after 3 seconds by default
 	InitialLifeSpan = 3.0f;
-
-	m_ShowDebug = false;
-	m_Strength = 1000.0f;
 }
 
 void APhysicsProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// @TODO: Handle impact
-	if (m_OwnerWeapon->IsA(UPhysicsWeaponComponent::StaticClass()))
-    {
-    	if (OtherActor)
-    	{
-    		if (UStaticMeshComponent* Mesh = Cast<UStaticMeshComponent>(OtherComp))
-    		{
-    			
-    			if (Mesh->Mobility == EComponentMobility::Movable)
-    			{
-    				float Mass = Hit.GetComponent()->GetMass();
-    				Mesh->AddImpulse(Hit.Normal * -1 * m_Strength * Mass);
-    			}
-    		}
-    	}
-    }
+	if ((m_OwnerWeapon != nullptr) && (OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
+	{
+		m_OwnerWeapon->ApplyDamage(Hit, this);
+	}
 
 	if (m_DestroyOnHit)
 	{
-		TArray<FHitResult> HitResults;
-		
-		
-		FVector TraceStart = this->GetActorLocation();
-
-		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Visibility));
-
-		TArray<AActor*> IgnoredActors;
-		IgnoredActors.Add(this);
-		EDrawDebugTrace::Type DebugDrawType = m_ShowDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None;
-
-		UKismetSystemLibrary::SphereTraceMulti(
-			this,
-			TraceStart,
-			TraceStart,
-			200.0f,
-			UEngineTypes::ConvertToTraceType(ECC_Visibility),
-			false,
-			IgnoredActors,
-			DebugDrawType,
-			HitResults,
-			true
-		);
-
-		for (const FHitResult& Hit : HitResults)
-		{
-			if (Hit.GetComponent() && (Hit.GetComponent()->IsA<UStaticMeshComponent>() || Hit.GetComponent()->IsA<USkeletalMeshComponent>()))
-			{
-				if (Hit.GetComponent()->Mobility == EComponentMobility::Movable)
-				{
-					float Mass = Hit.GetComponent()->GetMass();
-					Hit.GetComponent()->AddImpulse(Hit.Normal * -1 * m_Strength * Mass,"",true);
-				}
-			}
-		}
+		Destroy();
 	}
 }

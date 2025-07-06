@@ -4,6 +4,16 @@
 #include "GameFramework/DamageType.h"
 #include "WeaponDamageType.generated.h"
 
+
+
+UENUM(BlueprintType)
+enum class EImpulseType : uint8
+{
+	Linear UMETA(DisplayName = "Linear"),
+	Radial UMETA(DisplayName = "Radial"),
+	None UMETA(DisplayName = "None")
+};
+
 UCLASS(Blueprintable, EditInlineNew)
 class PHYSICS_API UWeaponDamageType : public UObject
 {
@@ -11,6 +21,16 @@ class PHYSICS_API UWeaponDamageType : public UObject
 
 public:
 	/** @TODO: Create damage data object */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Damage)
-	UDamageType* DamageType;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+    float m_Damage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+    float m_ExplosionRadius;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+    EImpulseType m_ImpulseType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damage", meta = (AllowPrivateAccess = "true"))
+    TSubclassOf<UDamageType> m_DamageTypeClass;
 };
+

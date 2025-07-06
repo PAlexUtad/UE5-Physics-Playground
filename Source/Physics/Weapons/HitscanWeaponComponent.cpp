@@ -27,7 +27,7 @@ void UHitscanWeaponComponent::Fire()
 
 	if (Hit.bBlockingHit && Hit.GetActor() && Hit.GetComponent()->Mobility == EComponentMobility::Movable)
 	{
-		Hit.GetComponent()->AddImpulse(Hit.Normal * 100000 * -1);
+		ApplyDamage(Hit,Hit.GetActor());
 		onHitscanImpact.Broadcast(Hit.GetActor(), Hit.ImpactPoint, GetOwner()->GetActorForwardVector());
 		//UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), m_ImpactEffect, Hit.Location, FRotator::ZeroRotator, true);
 	}

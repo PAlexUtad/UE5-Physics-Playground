@@ -103,3 +103,40 @@ void UPhysicsWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	// maintain the EndPlay call chain
 	Super::EndPlay(EndPlayReason);
 }
+
+
+void UPhysicsWeaponComponent::ApplyDamage(const FHitResult& outHit, AActor* hitActor)
+{
+	if (m_WeaponDamageType != nullptr)
+	{
+		if (!hitActor) hitActor = GetOwner();
+		
+		switch (m_WeaponDamageType->m_ImpulseType)
+		{
+		case EImpulseType::Linear:
+			{
+				UGameplayStatics::ApplyPointDamage(outHit.GetActor(),
+					m_WeaponDamageType->m_Damage, -outHit.ImpactNormal, outHit, Character->GetController(),
+					hitActor, m_WeaponDamageType->m_DamageTypeClass);
+			}
+			break;
+		case EImpulseType::Radial:
+			{
+				const TArray<AActor*> Actors = { hitActor, Character };
+				UGameplayStatics::ApplyRadialDamage(outHit.GetActor(),
+					m_WeaponDamageType->m_Damage, outHit.ImpactPoint, m_WeaponDamageType->m_ExplosionRadius, m_WeaponDamageType->m_DamageTypeClass,
+					Actors, hitActor, Character->GetController());
+			}
+			break;
+		case EImpulseType::None:
+			{
+				UGameplayStatics::ApplyDamage(outHit.GetActor(), m_WeaponDamageType->m_Damage,
+					Character->GetController(),
+					hitActor, m_WeaponDamageType->m_DamageTypeClass);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}

@@ -51,6 +51,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	virtual void Fire();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void ApplyDamage(const FHitResult& _oHit, AActor* _pActor = nullptr);
+
 protected:
 
 	virtual void BeginPlay() override;
